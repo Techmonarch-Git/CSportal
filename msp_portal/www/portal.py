@@ -110,6 +110,8 @@ def get_context(context):
     context.icons = ICONS
     context.no_cache = 1
     context.show_sidebar = False
+    context.title = _("Customer Portal")
+    context.no_header = 1
     context.no_breadcrumbs = 1
     context.support_email = frappe.conf.get("portal_support_email", "")
     context.user_fullname = (
