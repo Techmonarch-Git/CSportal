@@ -1,0 +1,237 @@
+{%- block title %}Customer Portal{%- endblock %}
+
+{%- block head_include %}
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Raleway:wght@600;700&family=Open+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+{%- endblock %}
+
+{%- block page_content %}
+<style>
+  /* ── TechMonarch Portal ────────────────────────────────── */
+  :root {
+    --tm-primary:    #FF4C22;
+    --tm-primary-10: #FFF0EB;
+    --tm-primary-40: rgba(255, 76, 34, 0.40);
+    --tm-body:       #1A1A1A;
+    --tm-secondary:  #767171;
+    --tm-hover:      #F5F5F5;
+    --tm-bg:         #FFFFFF;
+    --tm-border:     #E8E8E8;
+    --tm-radius:     12px;
+  }
+
+  .portal-wrap {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 48px 24px 64px;
+    font-family: 'Open Sans', Arial, Helvetica, sans-serif;
+    color: var(--tm-body);
+  }
+
+  /* ── Header ─────────────────────────────────────────────── */
+  .portal-header {
+    margin-bottom: 40px;
+  }
+  .portal-header h1 {
+    font-family: 'Raleway', Arial, Helvetica, sans-serif;
+    font-weight: 700;
+    font-size: 28px;
+    color: var(--tm-primary);
+    margin: 0 0 6px;
+    line-height: 1.3;
+  }
+  .portal-header p {
+    font-size: 15px;
+    color: var(--tm-secondary);
+    margin: 0;
+  }
+
+  /* ── Tile grid ──────────────────────────────────────────── */
+  .tile-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
+    gap: 20px;
+  }
+
+  /* ── Individual card ────────────────────────────────────── */
+  .tile-card {
+    display: flex;
+    flex-direction: column;
+    background: var(--tm-bg);
+    border: 1px solid var(--tm-border);
+    border-radius: var(--tm-radius);
+    padding: 24px;
+    text-decoration: none !important;
+    color: var(--tm-body);
+    transition: border-color 0.2s, box-shadow 0.2s, transform 0.15s;
+    position: relative;
+    overflow: hidden;
+  }
+  .tile-card:hover {
+    border-color: var(--tm-primary);
+    box-shadow: 0 4px 20px var(--tm-primary-40);
+    transform: translateY(-2px);
+  }
+  .tile-card:focus-visible {
+    outline: 2px solid var(--tm-primary);
+    outline-offset: 2px;
+  }
+
+  .tile-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 10px;
+    background: var(--tm-primary-10);
+    color: var(--tm-primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 16px;
+    flex-shrink: 0;
+  }
+
+  .tile-card h3 {
+    font-family: 'Raleway', Arial, Helvetica, sans-serif;
+    font-weight: 600;
+    font-size: 17px;
+    margin: 0 0 6px;
+    color: var(--tm-body);
+  }
+  .tile-card .tile-desc {
+    font-size: 13.5px;
+    color: var(--tm-secondary);
+    line-height: 1.5;
+    margin: 0 0 16px;
+    flex: 1;
+  }
+  .tile-cta {
+    font-size: 13.5px;
+    font-weight: 600;
+    color: var(--tm-primary);
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .tile-cta .arrow {
+    transition: transform 0.2s;
+  }
+  .tile-card:hover .tile-cta .arrow {
+    transform: translateX(3px);
+  }
+
+  /* ── Empty state ────────────────────────────────────────── */
+  .no-services {
+    text-align: center;
+    padding: 60px 24px;
+    color: var(--tm-secondary);
+  }
+  .no-services .empty-icon {
+    width: 64px;
+    height: 64px;
+    margin: 0 auto 16px;
+    color: var(--tm-border);
+  }
+  .no-services p {
+    font-size: 15px;
+    margin: 0;
+  }
+
+  /* ── Help box ───────────────────────────────────────────── */
+  .portal-help {
+    margin-top: 48px;
+    background: var(--tm-primary-10);
+    border-radius: var(--tm-radius);
+    padding: 20px 24px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 14px;
+    color: var(--tm-body);
+  }
+  .portal-help .help-icon {
+    color: var(--tm-primary);
+    flex-shrink: 0;
+  }
+  .portal-help a {
+    color: var(--tm-primary);
+    font-weight: 600;
+    text-decoration: none;
+  }
+  .portal-help a:hover {
+    text-decoration: underline;
+  }
+
+  /* ── Responsive ─────────────────────────────────────────── */
+  @media (max-width: 600px) {
+    .portal-wrap { padding: 32px 16px 48px; }
+    .portal-header h1 { font-size: 22px; }
+    .tile-grid { grid-template-columns: 1fr; }
+  }
+
+  /* Hide default Frappe breadcrumbs & page heading on this page */
+  .page-head, .breadcrumb-container, [data-page-container] > .page-head { display: none !important; }
+</style>
+
+<div class="portal-wrap">
+  <!-- Header -->
+  <div class="portal-header">
+    <h1>Welcome, {{ user_fullname }}</h1>
+    <p>Select a service to get started.</p>
+  </div>
+
+  {% if tiles %}
+  <!-- Tile grid -->
+  <div class="tile-grid">
+    {% for tile in tiles %}
+    <a href="{{ tile.url }}" class="tile-card" id="portal-tile-{{ loop.index }}">
+      <div class="tile-icon">{{ icons.get(tile.icon, icons.grid) }}</div>
+      <h3>{{ tile.title }}</h3>
+      <p class="tile-desc">{{ tile.description }}</p>
+      <span class="tile-cta">
+        {{ tile.cta }}
+        <span class="arrow">&rarr;</span>
+      </span>
+    </a>
+    {% endfor %}
+  </div>
+  {% else %}
+  <!-- Empty state -->
+  <div class="no-services">
+    <div class="empty-icon">
+      <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24"
+           fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
+           stroke-linejoin="round">
+        <rect width="7" height="7" x="3" y="3" rx="1"/>
+        <rect width="7" height="7" x="14" y="3" rx="1"/>
+        <rect width="7" height="7" x="14" y="14" rx="1"/>
+        <rect width="7" height="7" x="3" y="14" rx="1"/>
+      </svg>
+    </div>
+    <p>No services are currently assigned to your account.</p>
+    <p style="margin-top:8px; font-size:13px;">
+      If you believe this is an error, please contact your administrator.
+    </p>
+  </div>
+  {% endif %}
+
+  {% if support_email %}
+  <!-- Help box -->
+  <div class="portal-help">
+    <span class="help-icon">
+      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
+           fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+           stroke-linejoin="round">
+        <circle cx="12" cy="12" r="10"/>
+        <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/>
+        <path d="M12 17h.01"/>
+      </svg>
+    </span>
+    <span>
+      Need help? Contact us at
+      <a href="mailto:{{ support_email }}">{{ support_email }}</a>
+    </span>
+  </div>
+  {% endif %}
+</div>
+{%- endblock %}
