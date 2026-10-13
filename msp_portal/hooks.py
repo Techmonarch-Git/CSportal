@@ -28,3 +28,9 @@ msp_portal_tiles = []
 # return a list of tile dicts.  Errors are logged and skipped; they never break
 # the page.
 msp_portal_tile_providers = []
+
+# Override Wiki Document class so the reader switcher dropdown strictly filters
+# spaces by user permissions (prevents tenant space leakage even if Wiki app updates)
+override_doctype_class = {
+    "Wiki Document": "msp_portal.overrides.TenantSafeWikiDocument"
+}
